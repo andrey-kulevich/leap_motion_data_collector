@@ -1,4 +1,3 @@
-# coding=utf-8
 import Leap
 import datetime
 import csv
@@ -8,8 +7,8 @@ class ActionListener(Leap.Listener):
     finger_names = ['Thumb', 'Index', 'Middle', 'Ring', 'Pinky']
     bone_names = ['Metacarpal', 'Proximal', 'Intermediate', 'Distal']
     counter = 0
-    letter = 'А'
-
+    letter = 'A'
+    file = open("data.csv", "w")
 
     def setCurrentLetter(self, letter):
         self.letter = letter
@@ -19,7 +18,6 @@ class ActionListener(Leap.Listener):
 
     def on_connect(self, controller):
         print "Connected"
-        self.file = open(self.letter + datetime + ".csv", "x")
 
     def on_disconnect(self, controller):
         # Note: not dispatched when running in a debugger.
@@ -28,6 +26,7 @@ class ActionListener(Leap.Listener):
     def on_exit(self, controller):
         print "Exited"
         self.file.close()
+        print self.counter
 
     def on_frame(self, controller):
         # Get the most recent frame and report some basic information
@@ -79,7 +78,7 @@ class ActionListener(Leap.Listener):
                         bone.next_joint,
                         bone.direction)
 
-            self.counter += 1
+        self.counter += 1
 
         if not frame.hands.is_empty:
             print ""
