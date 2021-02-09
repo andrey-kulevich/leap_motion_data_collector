@@ -1,17 +1,16 @@
 import Leap
-import datetime
+from datetime import datetime
 import csv
 
 
 class ActionListener(Leap.Listener):
     finger_names = ['Thumb', 'Index', 'Middle', 'Ring', 'Pinky']
     bone_names = ['Metacarpal', 'Proximal', 'Intermediate', 'Distal']
-    counter = 0
-    letter = 'A'
-    file = open("data.csv", "w")
 
-    def setCurrentLetter(self, letter):
-        self.letter = letter
+    def __init__(self, letter):
+        Leap.Listener.__init__(self)
+        self.file = open("./collected_data/" + letter + "_" + datetime.now().strftime("%d-%m_%H-%M-%S") + ".csv", "w")
+        self.writer = csv.writer(self.file, delimiter=',', quotechar='"', quoting=csv.QUOTE_MINIMAL)
 
     def on_init(self, controller):
         print "Initialized"
@@ -26,59 +25,31 @@ class ActionListener(Leap.Listener):
     def on_exit(self, controller):
         print "Exited"
         self.file.close()
-        print self.counter
 
     def on_frame(self, controller):
         # Get the most recent frame and report some basic information
         frame = controller.frame()
 
         print "Frame id: %d, timestamp: %d, hands: %d, fingers: %d" % (
-              frame.id, frame.timestamp, len(frame.hands), len(frame.fingers))
+            frame.id, frame.timestamp, len(frame.hands), len(frame.fingers))
 
         # Get hands
         for hand in frame.hands:
 
-            hand_type = "Left hand" if hand.is_left else "Right hand"
-
-            print "  %s, id %d, position: %s" % (
-                hand_type, hand.id, hand.palm_position)
-
-            # Get the hand's normal vector and direction
-            normal = hand.palm_normal
-            direction = hand.direction
-
-            # Calculate the hand's pitch, roll, and yaw angles
-            print "  pitch: %f degrees, roll: %f degrees, yaw: %f degrees" % (
-                direction.pitch * Leap.RAD_TO_DEG,
-                normal.roll * Leap.RAD_TO_DEG,
-                direction.yaw * Leap.RAD_TO_DEG)
-
-            # Get arm bone
-            arm = hand.arm
-            print "  Arm direction: %s, wrist position: %s, elbow position: %s" % (
-                arm.direction,
-                arm.wrist_position,
-                arm.elbow_position)
+            vector = [-1 if hand.is_left else 1, hand.palm_position,
+                      hand.palm_normal.roll, hand.direction.pitch,
+                      hand.direction.yaw, hand.arm.direction,
+                      hand.arm.wrist_position, hand.arm.elbow_position]
 
             # Get fingers
             for finger in hand.fingers:
-
-                print "    %s finger, id: %d, length: %fmm, width: %fmm" % (
-                    self.finger_names[finger.type],
-                    finger.id,
-                    finger.length,
-                    finger.width)
-
+                vector.extend([finger.id, finger.length, finger.width])
                 # Get bones
                 for b in range(0, 4):
                     bone = finger.bone(b)
-                    print "      Bone: %s, start: %s, end: %s, direction: %s" % (
-                        self.bone_names[bone.type],
-                        bone.prev_joint,
-                        bone.next_joint,
-                        bone.direction)
+                    vector.extend([bone.prev_joint, bone.next_joint, bone.direction])
 
-        self.counter += 1
+            self.writer.writerow(vector)
 
         if not frame.hands.is_empty:
             print ""

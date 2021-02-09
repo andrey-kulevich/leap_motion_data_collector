@@ -39,7 +39,7 @@ class MainWindow(Tk):
 
     def record(self):
         # Create a sample listener and controller
-        listener = ActionListener()
+        listener = ActionListener(self.alphabet[self.current_letter])
         controller = Leap.Controller()
 
         self.start.config(text="ИДЕТ ЗАПИСЬ...")
