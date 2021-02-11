@@ -10,7 +10,7 @@ class ActionListener(Leap.Listener):
     def __init__(self, letter):
         Leap.Listener.__init__(self)
         self.file = open("./collected_data/" + letter + "_" + datetime.now().strftime("%d-%m_%H-%M-%S") + ".csv", "w")
-        self.writer = csv.writer(self.file, delimiter=',', quotechar='"', quoting=csv.QUOTE_MINIMAL)
+        self.writer = csv.writer(self.file)
 
     def on_init(self, controller):
         print "Initialized"
