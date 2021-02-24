@@ -17,13 +17,14 @@ class MainWindow(Tk):
     def __init__(self, master=Tk):
         Tk.__init__(self)
         self.title("Сбор данных для распознавания азбуки жестов")
-        self.minsize(width=300, height=300)
+        self.minsize(width=470, height=600)
         self.iconbitmap('./img/hand.ico')
         self.configure(bg='white')
         bg_style = Style()
         bg_style.configure('bg.TLabel', background='white')
 
         self.master = master
+        self.images.fromkeys(self.letters)
         self.load_images()
 
         self.start = Button(self, text="НАЧАТЬ", command=self.record)
@@ -44,27 +45,26 @@ class MainWindow(Tk):
         self.start.pack(side="bottom", fill=X, padx=5, pady=5)
 
     def load_images(self):
-        self.images.fromkeys(self.letters)
         for i in range(len(self.letters)):
             self.images[self.letters[i]] = PhotoImage(file='./img/' + self.letters[i] + '.gif')
 
     def record(self):
         # Create a sample listener and controller
-        # listener = ActionListener(self.letters[self.current_letter])
-        # controller = Leap.Controller()
+        listener = ActionListener(self.letters[self.current_letter])
+        controller = Leap.Controller()
 
         self.start.config(text="ИДЕТ ЗАПИСЬ...")
         self.update()
 
         # Have the sample listener receive events from the controller
-        # controller.add_listener(listener)
-        #
-        # # Keep this process running 4 seconds
-        # time.sleep(4)
-        #
-        # controller.remove_listener(listener)
+        controller.add_listener(listener)
+
+        # Keep this process running 4 seconds
+        time.sleep(4)
+
+        controller.remove_listener(listener)
 
         self.start.config(text="НАЧАТЬ")
         self.current_letter += 1
-        self.exp_letter.config(text=self.alphabet[self.current_letter])
+        self.exp_letter.config(text=self.letters[self.current_letter])
         self.img.config(image=self.images[self.letters[self.current_letter]])
