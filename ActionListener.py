@@ -4,6 +4,13 @@ import csv
 
 
 class ActionListener(Leap.Listener):
+    """
+    listener for all events in Leap Motion controller (extends Leap.Listener)
+
+    letter - symbol that we are currently tracking
+
+    creates in folder ./collected_data csv file with all frames collected during to session
+    """
     finger_names = ['Thumb', 'Index', 'Middle', 'Ring', 'Pinky']
     bone_names = ['Metacarpal', 'Proximal', 'Intermediate', 'Distal']
 

@@ -7,10 +7,11 @@ import time
 
 
 class MainWindow(Tk):
+    """
+    main window that provides functionality for tracking data from Leap Motion controller (extends Tkinter.Tk)
+    """
     current_letter = 0
-    letters = ['A', 'B', 'C', 'D', 'E', 'F', 'G',
-               'H', 'I', 'J', 'K', 'L', 'M', 'N',
-               'O', 'P', 'Q', 'R', 'S', 'T', 'U',
+    letters = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U',
                'V', 'W', 'X', 'Y', 'Z']
     images = {}
 
@@ -34,6 +35,10 @@ class MainWindow(Tk):
         self.create_widgets()
 
     def create_widgets(self):
+        """
+        creates widgets for window
+        :return:
+        """
         header = Label(text="Попробуйте повторить этот жест. Затем нажмите кнопку \"Начать\" \n"
                             "и удерживайте этот жест в течение 4 секунд. \n"
                             "Держите руку перед контроллером, пока идет запись. \n",
@@ -45,10 +50,22 @@ class MainWindow(Tk):
         self.start.pack(side="bottom", fill=X, padx=5, pady=5)
 
     def load_images(self):
+        """
+        load images with gestures for each letter
+        :return:
+        """
         for i in range(len(self.letters)):
             self.images[self.letters[i]] = PhotoImage(file='./img/' + self.letters[i] + '.gif')
 
     def record(self):
+        """
+        run tracking data
+
+        tracking is in progress for 4 seconds
+
+        collected data will be available in ./collected_data
+        :return:
+        """
         # Create a sample listener and controller
         listener = ActionListener(self.letters[self.current_letter])
         controller = Leap.Controller()
